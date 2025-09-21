@@ -44,6 +44,10 @@
   { oracle: principal }
   { authorized: bool }
 )
+(define-map retired-credits
+  { account: principal }
+  { total-retired: uint }
+)
 
 (define-data-var next-project-id uint u1)
 (define-data-var next-order-id uint u1)
@@ -204,6 +208,19 @@
     (ft-transfer? blue-carbon-credits amount tx-sender recipient)
   )
 )
+(define-public (retire-credits (amount uint))
+  (begin
+    (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+    (try! (ft-burn? blue-carbon-credits amount tx-sender))
+    (let ((current-retired (default-to { total-retired: u0 } (map-get? retired-credits { account: tx-sender }))))
+      (map-set retired-credits
+        { account: tx-sender }
+        { total-retired: (+ (get total-retired current-retired) amount) }
+      )
+    )
+    (ok true)
+  )
+)
 
 (define-public (pause-contract)
   (begin
@@ -252,4 +269,8 @@
     contract-paused: (var-get contract-paused),
     total-supply: (ft-get-supply blue-carbon-credits)
   }
+)
+
+(define-read-only (get-retired-credits (account principal))
+  (default-to { total-retired: u0 } (map-get? retired-credits { account: account }))
 )

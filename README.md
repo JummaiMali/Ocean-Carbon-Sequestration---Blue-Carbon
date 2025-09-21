@@ -129,3 +129,30 @@ Contract includes:
 ## 📄 License
 
 MIT License
+
+- 🔥 **Credit Retirement**: Permanently retire credits for verifiable carbon offsetting
+
+## 🔥 Token Retirement
+
+#### Retire Credits
+```clarity
+(retire-credits amount)
+```
+Permanently retire carbon credits to offset emissions, burning them from circulation
+
+### 👁️ Read-Only Functions
+
+- `get-project`: Get project details
+- `get-project-credits`: Get project credit information
+- `get-sell-order`: Get marketplace order details
+- `get-balance`: Get account's carbon credit balance
+- `get-total-supply`: Get total carbon credits minted
+- `get-retired-credits`: Get total retired credits for an account
+
+## 📈 Usage Example
+
+1. **Register Project**: Submit restoration project details
+2. **Oracle Verification**: Authorized oracle verifies via satellite data
+3. **Credit Minting**: Verified projects receive carbon credit tokens
+4. **Marketplace Trading**: Project owners can sell credits to buyers
+5. **Credit Retirement**: Users can retire credits to achieve carbon neutrality and demonstrate environmental commitment
