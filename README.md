@@ -140,6 +140,26 @@ MIT License
 ```
 Permanently retire carbon credits to offset emissions, burning them from circulation
 
+## 🏦 Credit Staking
+
+#### Stake Credits
+```clarity
+(stake-credits amount)
+```
+Lock carbon credits to earn rewards over time, promoting long-term ecosystem participation
+
+#### Unstake Credits
+```clarity
+(unstake-credits amount)
+```
+Unlock staked credits and claim accrued rewards
+
+#### Claim Rewards
+```clarity
+(claim-rewards)
+```
+Claim staking rewards without unstaking credits
+
 ### 👁️ Read-Only Functions
 
 - `get-project`: Get project details
@@ -148,6 +168,7 @@ Permanently retire carbon credits to offset emissions, burning them from circula
 - `get-balance`: Get account's carbon credit balance
 - `get-total-supply`: Get total carbon credits minted
 - `get-retired-credits`: Get total retired credits for an account
+- `get-staked-credits`: Get staked credit details for an account
 
 ## 📈 Usage Example
 
@@ -156,3 +177,4 @@ Permanently retire carbon credits to offset emissions, burning them from circula
 3. **Credit Minting**: Verified projects receive carbon credit tokens
 4. **Marketplace Trading**: Project owners can sell credits to buyers
 5. **Credit Retirement**: Users can retire credits to achieve carbon neutrality and demonstrate environmental commitment
+6. **Credit Staking**: Users can stake credits to earn additional rewards, fostering sustained engagement in carbon offset initiatives

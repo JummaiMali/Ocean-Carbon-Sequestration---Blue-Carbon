@@ -7,6 +7,7 @@
 (define-constant ERR_ORACLE_NOT_AUTHORIZED (err u105))
 (define-constant ERR_INVALID_PROJECT_TYPE (err u106))
 (define-constant ERR_PROJECT_ALREADY_EXISTS (err u107))
+(define-constant REWARD_RATE u1000)
 
 (define-fungible-token blue-carbon-credits)
 
@@ -47,6 +48,11 @@
 (define-map retired-credits
   { account: principal }
   { total-retired: uint }
+)
+
+(define-map staked-credits
+  { account: principal }
+  { amount: uint, stake-time: uint }
 )
 
 (define-data-var next-project-id uint u1)
@@ -238,6 +244,56 @@
   )
 )
 
+(define-public (stake-credits (amount uint))
+  (begin
+    (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+    (asserts! (>= (ft-get-balance blue-carbon-credits tx-sender) amount) ERR_INSUFFICIENT_CREDITS)
+    (let ((existing-stake (default-to { amount: u0, stake-time: u0 } (map-get? staked-credits { account: tx-sender }))))
+      (try! (ft-transfer? blue-carbon-credits amount tx-sender (as-contract tx-sender)))
+      (map-set staked-credits
+        { account: tx-sender }
+        { amount: (+ (get amount existing-stake) amount), stake-time: burn-block-height }
+      )
+      (ok true)
+    )
+  )
+)
+
+(define-public (unstake-credits (amount uint))
+  (let ((stake-data (unwrap! (map-get? staked-credits { account: tx-sender }) ERR_INSUFFICIENT_CREDITS))
+        (current-time burn-block-height)
+        (staked-amount (get amount stake-data))
+        (stake-time (get stake-time stake-data))
+        (rewards (/ (* staked-amount (- current-time stake-time)) REWARD_RATE)))
+    (asserts! (>= staked-amount amount) ERR_INSUFFICIENT_CREDITS)
+    (try! (ft-transfer? blue-carbon-credits amount (as-contract tx-sender) tx-sender))
+    (try! (ft-mint? blue-carbon-credits rewards tx-sender))
+    (if (is-eq (- staked-amount amount) u0)
+      (map-delete staked-credits { account: tx-sender })
+      (map-set staked-credits
+        { account: tx-sender }
+        { amount: (- staked-amount amount), stake-time: stake-time }
+      )
+    )
+    (ok rewards)
+  )
+)
+
+(define-public (claim-rewards)
+  (let ((stake-data (unwrap! (map-get? staked-credits { account: tx-sender }) ERR_INSUFFICIENT_CREDITS))
+        (current-time burn-block-height)
+        (staked-amount (get amount stake-data))
+        (stake-time (get stake-time stake-data))
+        (rewards (/ (* staked-amount (- current-time stake-time)) REWARD_RATE)))
+    (try! (ft-mint? blue-carbon-credits rewards tx-sender))
+    (map-set staked-credits
+      { account: tx-sender }
+      { amount: staked-amount, stake-time: current-time }
+    )
+    (ok rewards)
+  )
+)
+
 (define-read-only (get-project (project-id uint))
   (map-get? projects { project-id: project-id })
 )
@@ -273,4 +329,8 @@
 
 (define-read-only (get-retired-credits (account principal))
   (default-to { total-retired: u0 } (map-get? retired-credits { account: account }))
+)
+
+(define-read-only (get-staked-credits (account principal))
+  (default-to { amount: u0, stake-time: u0 } (map-get? staked-credits { account: account }))
 )
