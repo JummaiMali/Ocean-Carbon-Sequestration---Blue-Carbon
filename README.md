@@ -72,6 +72,12 @@ Cancel an active sell order
 ```
 Transfer blue carbon credits to another address
 
+#### Batch Transfer Credits
+```clarity
+(batch-transfer-credits recipients)
+```
+Efficiently transfer credits to multiple recipients in a single transaction, reducing gas costs and improving user experience for bulk distributions
+
 ### 👁️ Read-Only Functions
 
 - `get-project`: Get project details
@@ -178,3 +184,4 @@ Claim staking rewards without unstaking credits
 4. **Marketplace Trading**: Project owners can sell credits to buyers
 5. **Credit Retirement**: Users can retire credits to achieve carbon neutrality and demonstrate environmental commitment
 6. **Credit Staking**: Users can stake credits to earn additional rewards, fostering sustained engagement in carbon offset initiatives
+7. **Batch Transfers**: Organizations can efficiently distribute credits to multiple stakeholders in one go, streamlining reward programs and partnerships

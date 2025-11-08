@@ -214,6 +214,25 @@
     (ft-transfer? blue-carbon-credits amount tx-sender recipient)
   )
 )
+
+(define-public (batch-transfer-credits (recipients (list 10 { recipient: principal, amount: uint })))
+  (let ((total-amount (fold add-amount recipients u0)))
+    (asserts! (> total-amount u0) ERR_INVALID_AMOUNT)
+    (asserts! (>= (ft-get-balance blue-carbon-credits tx-sender) total-amount) ERR_INSUFFICIENT_CREDITS)
+    (fold transfer-single recipients (ok true))
+  )
+)
+
+(define-private (transfer-single (transfer-data { recipient: principal, amount: uint }) (result (response bool uint)))
+  (match result
+    success (ft-transfer? blue-carbon-credits (get amount transfer-data) tx-sender (get recipient transfer-data))
+    error (err error)
+  )
+)
+
+(define-private (add-amount (data { recipient: principal, amount: uint }) (acc uint))
+  (+ acc (get amount data))
+)
 (define-public (retire-credits (amount uint))
   (begin
     (asserts! (> amount u0) ERR_INVALID_AMOUNT)
