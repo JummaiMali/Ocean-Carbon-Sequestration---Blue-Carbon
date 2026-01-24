@@ -6,7 +6,8 @@ A Stacks blockchain smart contract for tokenizing verified blue carbon credits f
 - 🛰️ **Oracle Verification**: Satellite and oracle-based project verification system
 - 🪙 **Carbon Credit Tokenization**: Mint fungible blue carbon credit tokens
 - 🛒 **Marketplace**: Create and execute buy/sell orders for carbon credits
-- 📊 **Transparency**: Public tracking of all restoration projects and transactions
+- 💰 **Project Funding Pool**: Community crowdfunding for blue carbon projects
+- � **Transparency**: Public tracking of all restoration projects and transactions
 
 ## 🚀 Getting Started
 
@@ -64,6 +65,20 @@ Purchase carbon credits from marketplace
 ```
 Cancel an active sell order
 
+### 💰 Project Funding
+
+#### Donate to Project
+```clarity
+(donate-to-project project-id amount)
+```
+Contribute STX to fund a specific blue carbon restoration project
+
+#### Withdraw Project Funds
+```clarity
+(withdraw-project-funds project-id amount)
+```
+Withdraw accumulated funds from a project pool (project owner only)
+
 ### 💰 Token Operations
 
 #### Transfer Credits
@@ -85,6 +100,7 @@ Efficiently transfer credits to multiple recipients in a single transaction, red
 - `get-sell-order`: Get marketplace order details
 - `get-balance`: Get account's carbon credit balance
 - `get-total-supply`: Get total carbon credits minted
+- `get-project-funds`: Get total funds raised for a project
 
 ## 🔒 Access Control
 
@@ -97,6 +113,7 @@ Efficiently transfer credits to multiple recipients in a single transaction, red
 
 ### Project Owners
 - Create marketplace sell orders for their verified credits
+- Withdraw funds from their project's funding pool
 
 ## 🌍 Project Types
 
@@ -112,6 +129,7 @@ Efficiently transfer credits to multiple recipients in a single transaction, red
 2. **Oracle Verification**: Authorized oracle verifies via satellite data
 3. **Credit Minting**: Verified projects receive carbon credit tokens
 4. **Marketplace Trading**: Project owners can sell credits to buyers
+5. **Project Funding**: Community members can donate STX to support project development and scaling
 
 ## ⚠️ Error Codes
 
@@ -131,6 +149,7 @@ Contract includes:
 - Input validation for all parameters
 - Emergency pause functionality
 - Oracle authorization system
+- Fund withdrawal restrictions to project owners only
 
 ## 📄 License
 

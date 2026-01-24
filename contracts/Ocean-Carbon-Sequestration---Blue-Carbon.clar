@@ -55,6 +55,11 @@
   { amount: uint, stake-time: uint }
 )
 
+(define-map project-funds
+  { project-id: uint }
+  { total-funds: uint }
+)
+
 (define-data-var next-project-id uint u1)
 (define-data-var next-order-id uint u1)
 (define-data-var contract-paused bool false)
@@ -313,6 +318,35 @@
   )
 )
 
+(define-public (donate-to-project (project-id uint) (amount uint))
+  (let ((project (unwrap! (map-get? projects { project-id: project-id }) ERR_PROJECT_NOT_FOUND)))
+    (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+    (try! (stx-transfer? amount tx-sender (as-contract tx-sender)))
+    (let ((current-funds (default-to { total-funds: u0 } (map-get? project-funds { project-id: project-id }))))
+      (map-set project-funds
+        { project-id: project-id }
+        { total-funds: (+ (get total-funds current-funds) amount) }
+      )
+    )
+    (ok true)
+  )
+)
+
+(define-public (withdraw-project-funds (project-id uint) (amount uint))
+  (let ((project (unwrap! (map-get? projects { project-id: project-id }) ERR_PROJECT_NOT_FOUND))
+        (funds-data (unwrap! (map-get? project-funds { project-id: project-id }) ERR_INSUFFICIENT_CREDITS)))
+    (asserts! (is-eq tx-sender (get owner project)) ERR_NOT_AUTHORIZED)
+    (asserts! (>= (get total-funds funds-data) amount) ERR_INSUFFICIENT_CREDITS)
+    (asserts! (> amount u0) ERR_INVALID_AMOUNT)
+    (try! (as-contract (stx-transfer? amount tx-sender (get owner project))))
+    (map-set project-funds
+      { project-id: project-id }
+      { total-funds: (- (get total-funds funds-data) amount) }
+    )
+    (ok true)
+  )
+)
+
 (define-read-only (get-project (project-id uint))
   (map-get? projects { project-id: project-id })
 )
@@ -352,4 +386,8 @@
 
 (define-read-only (get-staked-credits (account principal))
   (default-to { amount: u0, stake-time: u0 } (map-get? staked-credits { account: account }))
+)
+
+(define-read-only (get-project-funds (project-id uint))
+  (default-to { total-funds: u0 } (map-get? project-funds { project-id: project-id }))
 )
